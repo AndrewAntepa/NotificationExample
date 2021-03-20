@@ -18,15 +18,33 @@ public class MusicService extends Service {
     public void onCreate() {
         super.onCreate();
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.yikes);
-
-        Intent clickNotify = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, clickNotify, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
+        
+        NotificationManager nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //TODO создание канала
+        NotificationChannel nChanneel = new NotificationChannel("Music channel","Nicki Minaj", NotificationManager.IMPORTANCE_DEFAULT);
+        nManager.createNotificationChannel(nChanneel);
+        //TODO Intent
+        Intent clickNotifIntent = new Intent(this, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, clickNotifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(this, "Music channel")
+                .setContentTitle("Вечеринка!!!!:)")
+                .setContentText("НИКИ МИНАЖЖЖЖ")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setChannelId("Music channel")
+                .setContentIntent(pIntent)
+                .setColor(Color.BLUE);
+
+        Notification notification = nBuilder.build();
+        nManager.notify(34, notification);
+
+        
         return Service.START_STICKY;
     }
 
